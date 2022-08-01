@@ -21,7 +21,8 @@ export default function Main() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginTop: '1rem'
+                marginTop: '1rem',
+                marginBottom: '1rem',
             }}
         >
             <form>

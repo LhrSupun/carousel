@@ -1,9 +1,9 @@
 import React from "react";
-import style from "./carousel.css";
+import style from "../carousel.module.css";
 
 export default function Title({ title }) {
     return (
-        <div className={style.centered2}>
+        <div className={style.centered}>
             <h1>{title}</h1>
         </div>
     );

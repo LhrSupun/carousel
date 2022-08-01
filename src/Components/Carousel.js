@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Title from './Title';
 import SubTitle from './SubTitle';
-import style from "./carousel.css";
+import style from "../carousel.module.css";
 
 export default function Carousel({ slides, infinite }) {
     const [images, setImages] = useState([]);
@@ -79,8 +79,8 @@ export default function Carousel({ slides, infinite }) {
 
 
     return (
-        <div style={{ marginTop: "1rem" }}>
-            <button className={style.prev} onClick={prevSlide} disabled={preButton}>
+        <div className={style.slideshowContainer}>
+            <button onClick={prevSlide} disabled={preButton}>
                 {"<<"}
             </button>
             {imageSourcesToDisplay?.map((image, index) => {
@@ -93,7 +93,7 @@ export default function Carousel({ slides, infinite }) {
                 )
             }
             )}
-            <button className={style.next} onClick={nextSlide} disabled={nextButton}>
+            <button  onClick={nextSlide} disabled={nextButton}>
                 {">>"}
             </button>
         </div>

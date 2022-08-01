@@ -1,5 +1,5 @@
 import React from "react";
-import style from "./carousel.css";
+import style from "../carousel.module.css";
 
 export default function SUbTitle({ title }) {
     return (
