@@ -1,21 +1,33 @@
 import React, { useState, useEffect } from 'react'
-import Title from './Title';
-import SubTitle from './SubTitle';
 import style from "../carousel.module.css";
+import Image from './Image';
+import LinkedList from '../LinkedList';
+
 
 export default function Carousel({ slides, infinite }) {
-    const [images, setImages] = useState([]);
 
-    const [currentImageIdx, setCurrentImagIdx] = useState(0);
     const [nextButton, setNextButton] = useState(false);
     const [preButton, setPrevButton] = useState(false);
+
+    const [list, setList] = useState(null);
+    const [size, setSize] = useState(1);
+    const [current, setCurrent] = useState(null);
 
 
     const getSlides = () => {
         fetch(`http://localhost:3600/api/carousel/?slides=${slides}`)
             .then((response) => response.json())
-            .then((data) => setImages(data));
-    };
+            .then((data) => {
+                // add items to the linked list
+                const linkedList = new LinkedList();
+                data?.forEach((item, index) => {
+                    linkedList.append(item);
+                })
+                setList(linkedList);
+                setSize(linkedList.getCount());
+                setCurrent(linkedList.getHead());
+            });
+    }
 
 
     useEffect(() => {
@@ -25,57 +37,55 @@ export default function Carousel({ slides, infinite }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slides, infinite]);
 
+
     const prevSlide = () => {
-        const resetToVeryBack = currentImageIdx === 0;
-
-        const index = resetToVeryBack ? images.length - 1 : currentImageIdx - 1;
-
-        setCurrentImagIdx(index);
-        if (index === 0 && infinite) {
+        if (list !== null) {
+            // infine or not
+            const prev = current?.prev;
+            if (infinite) {
+                // get the next item in the list
+                if (prev === null || prev === undefined) {
+                    setCurrent(list.getLast());
+                } else {
+                    setCurrent(prev);
+                }
+            } else {
+                if (size < list?.getCount() && prev !== null) {
+                    setSize((prev) => prev + 1);
+                    setCurrent(prev);
+                } else {
+                    setPrevButton(true);
+                    return;
+                }
+            }
+        } else {
             setPrevButton(true);
-        } else {
-            setPrevButton(false);
+            return;
         }
 
-        if (index === images.length - 1 && infinite) {
-            setNextButton(true);
-        } else {
-            setNextButton(false);
-        }
-    };
+    }
 
     const nextSlide = () => {
-        const resetIndex = currentImageIdx === images.length - 1;
+        if (list !== null) {
+            // infine or not
+            const next = current?.next;
+            if (infinite) {
+                setCurrent(next);
+            } else {
+                if (size > 1) {
+                    setSize((prev) => prev - 1);
+                    setCurrent(next);
+                } else {
+                    setNextButton(true);
+                    return;
+                }
+            }
 
-        const index = resetIndex ? 0 : currentImageIdx + 1;
-
-        setCurrentImagIdx(index);
-
-        if (index === 0) {
-            setPrevButton(true);
         } else {
-            setPrevButton(false);
-        }
-
-        if (index === images.length - 1) {
             setNextButton(true);
-        } else {
-            setNextButton(false);
+            return;
         }
-    };
-
-    const activeImageSourcesFromState = images.slice(
-        currentImageIdx,
-        currentImageIdx + 1
-    );
-
-    const imageSourcesToDisplay =
-        activeImageSourcesFromState.length < 3
-            ? 
-            activeImageSourcesFromState
-            : activeImageSourcesFromState;
-
-
+    }
 
 
     return (
@@ -83,17 +93,8 @@ export default function Carousel({ slides, infinite }) {
             <button onClick={prevSlide} disabled={preButton}>
                 {"<<"}
             </button>
-            {imageSourcesToDisplay?.map((image, index) => {
-                return (
-                    <span key={index}>
-                        <Title title={image.title} />
-                        <SubTitle title={image.subTitle} />
-                        <img key={index} src={image?.image} alt={image.alt} />
-                    </span>
-                )
-            }
-            )}
-            <button  onClick={nextSlide} disabled={nextButton}>
+            <Image value={current?.value} index={current?.count} />
+            <button onClick={nextSlide} disabled={nextButton}>
                 {">>"}
             </button>
         </div>
