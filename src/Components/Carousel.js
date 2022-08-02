@@ -41,15 +41,12 @@ export default function Carousel({ slides, infinite }) {
     const prevSlide = () => {
         if (list !== null) {
             // infine or not
-            console.log(current);
-            console.log("count", list.getCount(), size);
-            console.log("last", list.getLast());
-            let prev = current?.prev;
+            const prev = current?.prev;
             if (infinite) {
                 // get the next item in the list
-                if (prev === null) {
-                    prev = list.getLast();
-                    console.log("prev", prev);
+                if (prev === null || prev === undefined) {
+                    setCurrent(list.getLast());
+                } else {
                     setCurrent(prev);
                 }
             } else {
@@ -71,8 +68,6 @@ export default function Carousel({ slides, infinite }) {
     const nextSlide = () => {
         if (list !== null) {
             // infine or not
-            console.log("infinite", infinite);
-            console.log("count", list.getCount(), size);
             const next = current?.next;
             if (infinite) {
                 setCurrent(next);
