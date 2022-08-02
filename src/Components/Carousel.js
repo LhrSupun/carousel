@@ -10,6 +10,7 @@ export default function Carousel({ slides, infinite }) {
     const [preButton, setPrevButton] = useState(false);
 
     const [list, setList] = useState(null);
+    const [size, setSize] = useState(1);
     const [current, setCurrent] = useState(null);
 
 
@@ -23,9 +24,8 @@ export default function Carousel({ slides, infinite }) {
                     linkedList.append(item);
                 })
                 setList(linkedList);
-                setCurrent(linkedList.get(0));
-                console.log("count:", linkedList.getCount());
-                console.log("position:", linkedList.get(0).value);
+                setSize(linkedList.getCount());
+                setCurrent(linkedList.getHead());
             });
     }
 
@@ -39,28 +39,58 @@ export default function Carousel({ slides, infinite }) {
 
 
     const prevSlide = () => {
-        if (list?.count === 1 && current?.count === 1) {
+        if (list !== null) {
+            // infine or not
+            console.log(current);
+            console.log("count", list.getCount(), size);
+            console.log("last", list.getLast());
+            let prev = current?.prev;
+            if (infinite) {
+                // get the next item in the list
+                if (prev === null) {
+                    prev = list.getLast();
+                    console.log("prev", prev);
+                    setCurrent(prev);
+                }
+            } else {
+                if (size < list?.getCount() && prev !== null) {
+                    setSize((prev) => prev + 1);
+                    setCurrent(prev);
+                } else {
+                    setPrevButton(true);
+                    return;
+                }
+            }
+        } else {
             setPrevButton(true);
             return;
-        } else if (infinite) { // go reversely to the previous node
-            const prev = current.prev;
-            setCurrent(prev);
         }
 
     }
 
     const nextSlide = () => {
-        if (list?.count === 1 && current?.count === 1) {
+        if (list !== null) {
+            // infine or not
+            console.log("infinite", infinite);
+            console.log("count", list.getCount(), size);
+            const next = current?.next;
+            if (infinite) {
+                setCurrent(next);
+            } else {
+                if (size > 1) {
+                    setSize((prev) => prev - 1);
+                    setCurrent(next);
+                } else {
+                    setNextButton(true);
+                    return;
+                }
+            }
+
+        } else {
             setNextButton(true);
             return;
-        } else if (infinite) { // go forward to the next node
-            const next = current.next;
-            setCurrent(next);
         }
     }
-
-
-
 
 
     return (
