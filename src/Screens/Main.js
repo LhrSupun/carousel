@@ -10,7 +10,7 @@ export default function Main() {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        setSlides(slideCount.current.value);
+        setSlides(slideCount.current.value === '' ? 2 : parseInt(slideCount.current.value));
         setInfinite(infiniteCheckbox.current.checked);
     }
 
